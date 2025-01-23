@@ -1,5 +1,10 @@
 @extends('app')
 
+@php
+    use Illuminate\Support\Facades\Storage;
+    use Illuminate\Support\Str;
+@endphp
+
 @section('content')
 <div class="container">
     <h2 class="text-center mb-4">Liste des Recettes</h2>
@@ -18,7 +23,11 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ $recette->titre }}</h5>
                             <p class="card-text">{{ Str::limit($recette->description, 100) }}</p>
-                            <a href="{{ route('recettes.show', $recette->id) }}" class="btn btn-primary">Voir la recette</a>
+                            
+                            <!-- Lien vers la page de détails de la recette -->
+                            <a href="{{ route('recettes.show', $recette->id) }}" class="btn btn-primary mb-2">Voir la recette</a>
+
+        
                         </div>
                     </div>
                 </div>

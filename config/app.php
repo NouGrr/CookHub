@@ -26,6 +26,11 @@ return [
     |
     */
 
+    'aliases' => [   
+        'Blade' => Illuminate\Support\Facades\Blade::class,
+    ],
+
+
     'env' => env('APP_ENV', 'production'),
 
     /*

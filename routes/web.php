@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RecetteController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 
 // Route pour afficher le formulaire d'inscription
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -19,6 +20,8 @@ Route::post('/login', [AuthController::class, 'login']);
 // Route pour la déconnexion de l'utilisateur
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::resource('recettes', RecetteController::class);
+
 // Page d'accueil
 Route::get('/home', function () {
     return view('home');
@@ -28,7 +31,7 @@ Route::get('/home', function () {
 Route::get('/recettes', [RecetteController::class, 'index'])->name('recette.index');
 
 // Afficher une recette spécifique
-Route::get('/recettes/{id}', [RecetteController::class, 'show'])->name('recette.show');
+Route::get('recettes/show', [RecetteController::class, 'show'])->name('recettes.show');
 
 // Créer une nouvelle recette (formulaire)
 Route::get('/recettes/create', [RecetteController::class, 'create'])->name('recette.create');
@@ -54,3 +57,6 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/recettes/{id}', [RecetteController::class, 'update'])->name('recette.update');
     Route::delete('/recettes/{id}', [RecetteController::class, 'destroy'])->name('recette.destroy');
 });
+
+// Test de stockage
+Route::get('/test-storage', [RecetteController::class, 'testStorage']);

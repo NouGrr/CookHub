@@ -9,11 +9,14 @@ class Recette extends Model
 {
     use HasFactory;
 
+    protected $table = 'recettes'; // Spécifie le nom de la table si elle n'est pas le pluriel par défaut
     protected $fillable = [
-        'titre', 'description', 'ingredients', 'etapes', 'image', 'user_id'
-    ];
-
-    protected $casts = [
-        'ingredients' => 'array', // Convertit le champ JSON 'ingredients' en tableau
+        'titre',
+        'description',
+        'ingredients',
+        'instructions',
+        'temps_preparation',
+        'temps_cuisson',
+        'difficulte',
     ];
 }
