@@ -10,7 +10,10 @@ class RecetteController extends Controller
 {
     public function index()
     {
+        // Récupérer toutes les recettes (ou avec un filtrage si nécessaire)
         $recettes = Recette::all();
+
+        // Retourner la vue avec les recettes
         return view('recettes.index', compact('recettes'));
     }
 
@@ -31,7 +34,8 @@ class RecetteController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('public/images');
+            // Stockage de l'image dans le répertoire public/images
+            $imagePath = $request->file('image')->store('images', 'public'); // Utilisation du disque public
         } else {
             $imagePath = null;
         }
@@ -52,17 +56,18 @@ class RecetteController extends Controller
 
     public function show($id)
     {
-        $recette = Recette::findOrFail($id);  // On récupère la recette par son ID
+        $recette = Recette::findOrFail($id);
+
         return view('recettes.show', compact('recette'));
     }
 
-    public function edit($id)
+    public function edit($user_id)
     {
-        $recette = Recette::findOrFail($id);
+        $recette = Recette::findOrFail($user_id);
         return view('recettes.edit', compact('recette'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $user_id)
     {
         $request->validate([
             'titre' => 'required|string|max:255',
@@ -72,7 +77,7 @@ class RecetteController extends Controller
             'image' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
-        $recette = Recette::findOrFail($id);
+        $recette = Recette::findOrFail($user_id);
 
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('public/images');
@@ -88,18 +93,46 @@ class RecetteController extends Controller
         return redirect()->route('recette.index')->with('success', 'Recette mise à jour avec succès!');
     }
 
-    public function destroy($id)
-{
-    $recette = Recette::findOrFail($id);
+    public function destroy($user_id)
+    {
+        // Trouver la recette par son id
+        $recette = Recette::where('user_id', $user_id)->firstOrFail();  
 
-    // Supprimer l'image associée si elle existe
-    if ($recette->image && Storage::exists($recette->image)) {
-        Storage::delete($recette->image);
+        // Supprimer la recette
+        $recette->delete();
+
+        // Rediriger vers la page d'index des recettes avec un message de succès
+        return redirect()->route('recette.index')->with('success', 'Recette supprimée avec succès.');
     }
 
-    // Supprimer la recette
-    $recette->delete();
+    public function rate(Request $request, $user_id)
+    {
+        $request->validate([
+            'note' => 'required|integer|min:1|max:5',
+        ]);
 
-    return redirect()->route('recette.index')->with('success', 'Recette supprimée avec succès!');
-}
+        $recette = Recette::findOrFail($id);
+
+        // Vérifier si l'utilisateur a déjà noté
+        $rating = $recette->ratings()->where('user_id', auth()->id())->first();
+
+        if ($rating) {
+            $rating->update(['note' => $request->input('note')]);
+        } else {
+            $recette->ratings()->create([
+                'user_id' => auth()->id(),
+                'note' => $request->input('note'),
+            ]);
+        }
+
+        // Recalculer la note moyenne
+        $recette->note_moyenne = $recette->ratings()->avg('note');
+        $recette->nombre_notes = $recette->ratings()->count();
+        $recette->save();
+
+        session()->flash('success', 'Recette créée avec succès!');
+
+        return redirect()->route('recette.index', $id)->with('success', 'Votre note a été enregistrée.');
+    }
+
 }

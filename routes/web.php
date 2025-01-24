@@ -3,23 +3,18 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RecetteController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\RatingController;
+use App\Http\Controllers\AtelierController;
+use Illuminate\Support\Str;
 
-// Route pour afficher le formulaire d'inscription
+// Routes d'authentification
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-
-// Route pour enregistrer l'utilisateur
 Route::post('/register', [AuthController::class, 'register']);
-
-// Route pour afficher le formulaire de connexion
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-
-// Route pour authentifier l'utilisateur
 Route::post('/login', [AuthController::class, 'login']);
-
-// Route pour la déconnexion de l'utilisateur
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Routes de gestion des recettes
 Route::resource('recettes', RecetteController::class);
 
 // Page d'accueil
@@ -40,23 +35,46 @@ Route::get('/recettes/create', [RecetteController::class, 'create'])->name('rece
 Route::post('/recettes', [RecetteController::class, 'store'])->name('recette.store');
 
 // Modifier une recette existante (formulaire)
-Route::get('/recettes/{id}/edit', [RecetteController::class, 'edit'])->name('recette.edit');
+Route::get('/recettes/{user_id}/edit', [RecetteController::class, 'edit'])->name('recette.edit');
 
 // Mettre à jour une recette existante
-Route::put('/recettes/{id}', [RecetteController::class, 'update'])->name('recette.update');
-
-// Supprimer une recette
-Route::delete('/recettes/{id}', [RecetteController::class, 'destroy'])->name('recette.destroy');
+Route::put('/recettes/{user_id}', [RecetteController::class, 'update'])->name('recette.update');
 
 // Protéger certaines routes avec un middleware (authentification)
 Route::middleware(['auth'])->group(function () {
     // Routes de gestion des recettes accessibles uniquement aux utilisateurs connectés
     Route::get('/recettes/create', [RecetteController::class, 'create'])->name('recette.create');
     Route::post('/recettes', [RecetteController::class, 'store'])->name('recette.store');
-    Route::get('/recettes/{id}/edit', [RecetteController::class, 'edit'])->name('recette.edit');
-    Route::put('/recettes/{id}', [RecetteController::class, 'update'])->name('recette.update');
-    Route::delete('/recettes/{id}', [RecetteController::class, 'destroy'])->name('recette.destroy');
+    Route::get('/recettes/{user_id}/edit', [RecetteController::class, 'edit'])->name('recette.edit');
+    Route::put('/recettes/{user_id}', [RecetteController::class, 'update'])->name('recette.update');
+    Route::delete('/recettes/{user_id}', [RecetteController::class, 'destroy'])->name('recettes.destroy');
+
+    // Routes de gestion des ateliers accessibles uniquement aux utilisateurs connectés
+    Route::resource('ateliers', AtelierController::class);
+    Route::post('ateliers/{id}/add-participant', [AtelierController::class, 'addParticipant'])->name('ateliers.addParticipant');
 });
 
 // Test de stockage
 Route::get('/test-storage', [RecetteController::class, 'testStorage']);
+
+// Route pour soumettre une note
+Route::post('/ratings/store', [RatingController::class, 'store'])->name('ratings.store');
+
+// Middleware 'admin' pour protéger les actions réservées aux administrateurs
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::delete('/recettes/{user_id}', [RecetteController::class, 'destroy'])->name('recettes.destroy');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('ateliers', AtelierController::class);
+    
+    // Route pour supprimer un atelier
+    Route::delete('/ateliers/{user_id}', [AtelierController::class, 'destroy'])->name('ateliers.destroy');
+    // Afficher le formulaire de création d'un atelier
+    Route::get('/ateliers/create', [AtelierController::class, 'create'])->name('ateliers.create');
+
+    // Enregistrer un atelier dans la base de données
+    Route::post('/ateliers', [AtelierController::class, 'store'])->name('ateliers.store');
+
+});

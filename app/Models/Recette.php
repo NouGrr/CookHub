@@ -9,14 +9,27 @@ class Recette extends Model
 {
     use HasFactory;
 
-    protected $table = 'recettes'; // Spécifie le nom de la table si elle n'est pas le pluriel par défaut
+    protected $primaryKey = 'user_id';
+
     protected $fillable = [
         'titre',
         'description',
         'ingredients',
+        'etapes',
         'instructions',
-        'temps_preparation',
         'temps_cuisson',
-        'difficulte',
+        'image',
+        'user_id',
     ];
+
+
+    public function ratings() {
+        return $this->hasMany(Rating::class, 'recette_id');
+    }
+
+    // Relation avec l'utilisateur
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -23,6 +23,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('recette.create') }}">Créer une recette</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('ateliers.index') }}">Ateliers culinaires</a> <!-- Lien vers la page des ateliers -->
+                    </li>
                     @auth
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Se déconnecter</a>
@@ -52,6 +55,13 @@
             @csrf
         </form>
     @endauth
+    
+    <!-- Vérification et affichage du message flash -->
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
