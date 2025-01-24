@@ -6,6 +6,6 @@
         <p class="lead">Cookhub pour la cuisine.</p>
         <hr class="my-4">
         <p>Recettes et bien plus</p>
-        <a class="btn btn-primary btn-lg" href="#" role="button">Commencez maintenant</a>
+        <a class="btn btn-primary btn-lg" href="{{ route('register') }}" role="button">Commencez maintenant</a>
     </div>
-@endsection
+@endsection 
