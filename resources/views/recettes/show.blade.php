@@ -60,17 +60,7 @@
         @else
             <p><a href="{{ route('login') }}">Connectez-vous</a> pour donner une note.</p>
         @endauth
-
-        <h4>Commentaires</h4>
-        @if($recette->ratings->count() > 0)
-            <div>
-                @foreach($recette->ratings as $rating)
-                    <p><strong>{{ $rating->user->name }} :</strong> {{ $rating->commentaire ?? 'Aucun commentaire' }}</p>
-                    <p><strong>Note :</strong> {{ $rating->note }} / 5</p>
-                @endforeach
-            </div>
-        @else
-            <p>Aucun commentaire pour cette recette.</p>
-        @endif
+        </div>
     </div>
+    
 @endsection

@@ -56,10 +56,11 @@ class RecetteController extends Controller
 
     public function show($id)
     {
-        $recette = Recette::findOrFail($id);
+        $recette = Recette::with('ratings')->findOrFail($id);
 
         return view('recettes.show', compact('recette'));
     }
+
 
     public function edit($user_id)
     {

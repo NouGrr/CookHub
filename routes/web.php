@@ -26,7 +26,7 @@ Route::get('/home', function () {
 Route::get('/recettes', [RecetteController::class, 'index'])->name('recette.index');
 
 // Afficher une recette spécifique
-Route::get('recettes/show', [RecetteController::class, 'show'])->name('recettes.show');
+Route::get('recettes/{id}', [RecetteController::class, 'show'])->name('recettes.show');
 
 // Créer une nouvelle recette (formulaire)
 Route::get('/recettes/create', [RecetteController::class, 'create'])->name('recette.create');
@@ -57,8 +57,7 @@ Route::middleware(['auth'])->group(function () {
 // Test de stockage
 Route::get('/test-storage', [RecetteController::class, 'testStorage']);
 
-// Route pour soumettre une note
-Route::post('/ratings/store', [RatingController::class, 'store'])->name('ratings.store');
+Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
 
 // Middleware 'admin' pour protéger les actions réservées aux administrateurs
 Route::middleware(['auth', 'admin'])->group(function () {
